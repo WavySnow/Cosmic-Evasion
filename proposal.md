@@ -15,8 +15,6 @@ Learning how to use standard Pygame clocks to keep the block movements consisten
 Tracking and safely updating lists of falling rectangles so that obstacles can be added and removed from memory without crashing the game.
 Structuring conditional if/else states to toggle between the active game loop and a static text menu upon a collision.
 
-## Project Outcomes
-
 ## Ideal Outcome
 A fully functional game that gets harder over time, featuring a live score display on a black background, fluid keyboard responses, and an instant game-over reset routine.
 
