@@ -26,7 +26,7 @@ player_speed = 6
 
 
 astroids = []
-spwan_counter = 0
+spawn_counter = 0
 score = 0
 game_over = False   
 
@@ -42,7 +42,7 @@ while True:
         if event.type == pygame.KEYDOWN and game_over:
             if event.key == pygame.K_SPACE:
                 player_x, player_y = 380, 500
-                astroids = []
+                asteroids = []
                 score = 0
                 game_over = False
 
@@ -76,6 +76,29 @@ while True:
 
             # Player Hitbox
             player_rect = pygame.Rect(player_x, player_y, 40, 40)
-            
 
-            
+            spawn_counter += 1
+            if spawn_counter >= 30:
+                ast_size = random.randint(30, 60)
+                ast_x = random.randint(0, WIDTH - ast_size)
+
+                asteroids.append(pygame.Rect(ast_x, -ast_size, ast_size, ast_size))
+                spawn_counter = 0
+
+
+            for asteroid in asteroids[:]:
+                asteroid.y += 5
+
+                if asteroid.top > HEIGHT:
+                    asteroids.remove(asteroid)
+                if player_rect.colliderect(asteroid):
+                    game_over = True
+
+    screen.fill(Black)
+
+    if game_over:
+
+        pygame.draw.rect(screen, Cyan, player_rect)
+
+        for asteroid in asteroids:
+            pygame.draw.rect(screen, Red, asteroid)
