@@ -33,10 +33,15 @@ game_over = False
 
 # Main Loop
 while True:
-    for event in pygame.event.get()
-    if event.type == pygame.QUIT:
-        pygame.quit()
-        sys.exit()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+         pygame.quit()
+         sys.exit()
 
 
-        
+        if event.type == pygame.KEYDOWN and game_over:
+            if event.key == pygame.K_SPACE:
+                player_x, player_y = 380, 500
+                astroids = []
+                score = 0
+                game_over = False
