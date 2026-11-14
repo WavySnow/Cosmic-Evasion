@@ -34,6 +34,11 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            # Exit anytime ESC is pressed
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                sys.exit()
 
         if event.type == pygame.KEYDOWN and game_over:
             if event.key == pygame.K_SPACE:
