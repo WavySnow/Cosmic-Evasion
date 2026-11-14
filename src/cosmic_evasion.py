@@ -55,15 +55,15 @@ while True:
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             player_x += player_speed
 
-        # Up (Fixed: uses player_y -=)
+        # Up 
         if keys[pygame.K_UP] or keys[pygame.K_w]:
             player_y -= player_speed
 
-        # Down (Fixed: uses player_y +=)
+        # Down 
         if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             player_y += player_speed
 
-        # Screen Boundary Collisions (Fixed: WIDTH - 40)
+        # Screen Boundary Collisions 
         if player_x < 0: player_x = 0
         if player_x > WIDTH - 40: player_x = WIDTH - 40
         if player_y < 0: player_y = 0
@@ -89,14 +89,14 @@ while True:
 
     screen.fill(Black)
 
-    # Fixed: flipped to 'if not game_over:'
+    
     if not game_over:
         pygame.draw.rect(screen, Cyan, player_rect)
 
         for asteroid in asteroids:
             pygame.draw.rect(screen, Red, asteroid)
 
-        # Fixed: comma instead of period, 'White' matches variable name
+        
         score_text = font.render(f"Score: {score}", True, White)
         screen.blit(score_text, (20, 20))
     else:
