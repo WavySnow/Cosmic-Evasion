@@ -52,15 +52,30 @@ while True:
 
             keys = pygame.key.get_pressed()
 
-        
+            #  Left
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 player_x -= player_speed
 
+            # Right
             if keys [pygame.K_RIGHT] or keys [pygame.K_d]:
                 player_x += player_speed
 
+            # Up
             if keys [pygame.K_UP] or keys [pygame.K_w]:
                player_x += player_speed
-        
+
+        # Down
             if keys [pygame.K_DOWN] or keys [pygame.K_s]:
                player_x += player_speed
+
+            # Screen Boundary Collisions
+            if player_x < 0: player_x = 0
+            if player_x > WIDTH - 40: player_x = - 40
+            if player_y < 0: player_y = 0
+            if player_y > HEIGHT - 40: player_y = HEIGHT - 40
+
+            # Player Hitbox
+            player_rect = pygame.Rect(player_x, player_y, 40, 40)
+            
+
+            
