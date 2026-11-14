@@ -45,3 +45,22 @@ while True:
                 astroids = []
                 score = 0
                 game_over = False
+
+
+    if not game_over:
+            score += 1
+
+            keys = pygame.key.get_pressed()
+
+        
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                player_x -= player_speed
+
+            if keys [pygame.K_RIGHT] or keys [pygame.K_d]:
+                player_x += player_speed
+
+            if keys [pygame.K_UP] or keys [pygame.K_w]:
+               player_x += player_speed
+        
+            if keys [pygame.K_DOWN] or keys [pygame.K_s]:
+               player_x += player_speed
