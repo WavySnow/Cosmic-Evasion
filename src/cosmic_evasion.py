@@ -102,3 +102,14 @@ while True:
 
         for asteroid in asteroids:
             pygame.draw.rect(screen, Red, asteroid)
+
+        score_text = font.render(f"Score: {score}", True. WHITE)
+        screen.blit(score_text, (20, 20))
+    else:
+        over_text = font.render("GAME OVER", True, Red)
+        restart_text = font.render(f"Final Score: {score}| Press [SPACE] to Restart")
+        screen.blit(over_text, (WIDTH // 2 - 60, HEIGHT // 2 - 20))
+        screen.blit(restart_text, (WIDTH // 2 - 180, HEIGHT // 2 + 20))
+
+    pygame.display.flip()
+    clock.tick(60)
