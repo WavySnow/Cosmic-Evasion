@@ -1,3 +1,4 @@
+import os
 import pygame
 import sys
 import random
@@ -13,13 +14,34 @@ clock = pygame.time.Clock()
 # Colors
 Black = (0, 0, 0)
 White = (255, 255, 255)
-Cyan = (0, 255, 255)
 Red = (255, 0, 0)
 
 font = pygame.font.SysFont("arial", 24)
 
+# Helper to load images, remove white background, and crop empty borders
+def load_sprite(filename):
+    path = os.path.join(os.path.dirname(__file__), "Assets", filename)
+    img = pygame.image.load(path).convert_alpha()
+    
+    # Turn near-white background pixels into transparency
+    width, height = img.get_size()
+    for x in range(width):
+        for y in range(height):
+            r, g, b, a = img.get_at((x, y))
+            if r > 240 and g > 240 and b > 240:
+                img.set_at((x, y), (255, 255, 255, 0))
+                
+    # Crop empty transparent borders
+    bounding_rect = img.get_bounding_rect()
+    return img.subsurface(bounding_rect).copy()
+
+# Load & Scale Sprites
+PLAYER_WIDTH, PLAYER_HEIGHT = 50, 60
+ship_img = pygame.transform.smoothscale(load_sprite("Halo ship.jpeg"), (PLAYER_WIDTH, PLAYER_HEIGHT))
+asteroid_base_img = load_sprite("Asteroid.png")
+
 # Game Variables
-player_x = 380
+player_x = 375
 player_y = 500
 player_speed = 6
 
@@ -35,14 +57,13 @@ while True:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            # Exit anytime ESC is pressed
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
 
         if event.type == pygame.KEYDOWN and game_over:
             if event.key == pygame.K_SPACE:
-                player_x, player_y = 380, 500
+                player_x, player_y = 375, 500
                 asteroids = []
                 score = 0
                 game_over = False
@@ -70,38 +91,40 @@ while True:
 
         # Screen Boundary Collisions 
         if player_x < 0: player_x = 0
-        if player_x > WIDTH - 40: player_x = WIDTH - 40
+        if player_x > WIDTH - PLAYER_WIDTH: player_x = WIDTH - PLAYER_WIDTH
         if player_y < 0: player_y = 0
-        if player_y > HEIGHT - 40: player_y = HEIGHT - 40
+        if player_y > HEIGHT - PLAYER_HEIGHT: player_y = HEIGHT - PLAYER_HEIGHT
 
-        # Player Hitbox
-        player_rect = pygame.Rect(player_x, player_y, 40, 40)
+        # Player Hitbox (slightly smaller than image for fair dodging)
+        player_rect = pygame.Rect(player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT).inflate(-10, -10)
 
         spawn_counter += 1
         if spawn_counter >= 30:
-            ast_size = random.randint(30, 60)
+            ast_size = random.randint(35, 70)
             ast_x = random.randint(0, WIDTH - ast_size)
-            asteroids.append(pygame.Rect(ast_x, -ast_size, ast_size, ast_size))
+            ast_rect = pygame.Rect(ast_x, -ast_size, ast_size, ast_size)
+            ast_img = pygame.transform.smoothscale(asteroid_base_img, (ast_size, ast_size))
+            asteroids.append({"rect": ast_rect, "img": ast_img})
             spawn_counter = 0
 
         for asteroid in asteroids[:]:
-            asteroid.y += 5
+            asteroid["rect"].y += 5
 
-            if asteroid.top > HEIGHT:
+            if asteroid["rect"].top > HEIGHT:
                 asteroids.remove(asteroid)
-            if player_rect.colliderect(asteroid):
+            elif player_rect.colliderect(asteroid["rect"].inflate(-8, -8)):
                 game_over = True
 
     screen.fill(Black)
 
-    
     if not game_over:
-        pygame.draw.rect(screen, Cyan, player_rect)
+        # Draw Ship Sprite
+        screen.blit(ship_img, (player_x, player_y))
 
+        # Draw Asteroid Sprites
         for asteroid in asteroids:
-            pygame.draw.rect(screen, Red, asteroid)
+            screen.blit(asteroid["img"], asteroid["rect"])
 
-        
         score_text = font.render(f"Score: {score}", True, White)
         screen.blit(score_text, (20, 20))
     else:
