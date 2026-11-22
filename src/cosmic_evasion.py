@@ -18,12 +18,12 @@ Red = (255, 0, 0)
 
 font = pygame.font.SysFont("arial", 24)
 
-# Helper to load images, remove white background, and crop empty borders
+
 def load_sprite(filename):
     path = os.path.join(os.path.dirname(__file__), "Assets", filename)
     img = pygame.image.load(path).convert_alpha()
     
-    # Turn near-white background pixels into transparency
+    
     width, height = img.get_size()
     for x in range(width):
         for y in range(height):
@@ -31,7 +31,7 @@ def load_sprite(filename):
             if r > 240 and g > 240 and b > 240:
                 img.set_at((x, y), (255, 255, 255, 0))
                 
-    # Crop empty transparent borders
+    
     bounding_rect = img.get_bounding_rect()
     return img.subsurface(bounding_rect).copy()
 
@@ -40,7 +40,7 @@ PLAYER_WIDTH, PLAYER_HEIGHT = 50, 60
 ship_img = pygame.transform.smoothscale(load_sprite("Halo ship.jpeg"), (PLAYER_WIDTH, PLAYER_HEIGHT))
 asteroid_base_img = load_sprite("Asteroid.png")
 
-# Generate 80 background stars: [x, y, speed, size, brightness]
+
 stars = []
 for _ in range(80):
     x = random.randint(0, WIDTH)
@@ -78,9 +78,9 @@ while True:
                 score = 0
                 game_over = False
 
-    # Move background stars continuously (even on the Game Over screen)
+    
     for star in stars:
-        star[1] += star[2]  # Add speed to y position
+        star[1] += star[2]  
         if star[1] > HEIGHT:
             star[1] = 0
             star[0] = random.randint(0, WIDTH)
@@ -132,18 +132,18 @@ while True:
             elif player_rect.colliderect(asteroid["rect"].inflate(-8, -8)):
                 game_over = True
 
-    # Draw Everything
+    
     screen.fill(Black)
 
-    # 1. Draw Starfield first so it stays behind the ship and asteroids
+    
     for x, y, speed, size, brightness in stars:
         pygame.draw.circle(screen, (brightness, brightness, brightness), (x, y), size)
 
     if not game_over:
-        # 2. Draw Ship Sprite
+       
         screen.blit(ship_img, (player_x, player_y))
 
-        # 3. Draw Asteroid Sprites
+        
         for asteroid in asteroids:
             screen.blit(asteroid["img"], asteroid["rect"])
 
