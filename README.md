@@ -1,8 +1,7 @@
 # Cosmic Evasion
 
-* **Video Demo:** 
-* **GitHub Repository:** 
-
+* **Video Demo:** https://youtu.be/-db5b_puPJM
+* **GitHub Repository:**  https://github.com/WavySnow/Cosmic-Evasion
 ## Description
 **Cosmic Evasion** is an interactive 2D arcade game built in Python using the Pygame library. Players pilot a spaceship through deep space to dodge an endless barrage of falling asteroids while their survival score climbs in real time. Moving beyond simple geometric placeholders, the game incorporates custom sprite assets, automated background removal, and a multi-layered parallax starfield to create a polished retro arcade experience.
 

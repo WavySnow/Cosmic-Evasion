@@ -20,7 +20,7 @@ font = pygame.font.SysFont("arial", 24)
 PLAYER_WIDTH, PLAYER_HEIGHT = 50, 60
 
 
-# Function 1: Your exact sprite loader
+
 def load_sprite(filename):
     path = os.path.join(os.path.dirname(__file__), "Assets", filename)
     img = pygame.image.load(path).convert_alpha()
@@ -36,7 +36,7 @@ def load_sprite(filename):
     return img.subsurface(bounding_rect).copy()
 
 
-# Function 2: Your exact starfield code
+
 def create_stars():
     stars = []
     for _ in range(80):
@@ -49,7 +49,7 @@ def create_stars():
     return stars
 
 
-# Function 3: Your exact Pygame movement & boundary checks
+
 def move_player(player_x, player_y, player_speed):
     keys = pygame.key.get_pressed()
 
@@ -78,7 +78,7 @@ def move_player(player_x, player_y, player_speed):
     return player_x, player_y
 
 
-# Function 4: Your exact Pygame asteroid spawning & Rect collision code
+
 def handle_asteroids(asteroids, spawn_counter, asteroid_base_img, player_rect):
     spawn_counter += 1
     if spawn_counter >= 30:
@@ -101,7 +101,7 @@ def handle_asteroids(asteroids, spawn_counter, asteroid_base_img, player_rect):
     return spawn_counter, game_over
 
 
-# Function 5: Your exact Pygame drawing & blitting code
+
 def draw_game(stars, ship_img, player_x, player_y, asteroids, score, game_over):
     screen.fill(Black)
 
@@ -125,7 +125,7 @@ def draw_game(stars, ship_img, player_x, player_y, asteroids, score, game_over):
     pygame.display.flip()
 
 
-# Required main() function
+
 def main():
     ship_img = pygame.transform.smoothscale(load_sprite("Halo ship.jpeg"), (PLAYER_WIDTH, PLAYER_HEIGHT))
     asteroid_base_img = load_sprite("Asteroid.png")
@@ -141,7 +141,7 @@ def main():
     score = 0
     game_over = False   
 
-    # Main Loop
+   
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
