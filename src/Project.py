@@ -17,12 +17,13 @@ White = (255, 255, 255)
 Red = (255, 0, 0)
 
 font = pygame.font.SysFont("arial", 24)
+PLAYER_WIDTH, PLAYER_HEIGHT = 50, 60
 
 
+# Function 1: Your exact sprite loader
 def load_sprite(filename):
     path = os.path.join(os.path.dirname(__file__), "Assets", filename)
     img = pygame.image.load(path).convert_alpha()
-    
     
     width, height = img.get_size()
     for x in range(width):
@@ -31,119 +32,85 @@ def load_sprite(filename):
             if r > 240 and g > 240 and b > 240:
                 img.set_at((x, y), (255, 255, 255, 0))
                 
-    
     bounding_rect = img.get_bounding_rect()
     return img.subsurface(bounding_rect).copy()
 
-# Load & Scale Sprites
-PLAYER_WIDTH, PLAYER_HEIGHT = 50, 60
-ship_img = pygame.transform.smoothscale(load_sprite("Halo ship.jpeg"), (PLAYER_WIDTH, PLAYER_HEIGHT))
-asteroid_base_img = load_sprite("Asteroid.png")
+
+# Function 2: Your exact starfield code
+def create_stars():
+    stars = []
+    for _ in range(80):
+        x = random.randint(0, WIDTH)
+        y = random.randint(0, HEIGHT)
+        speed = random.choice((1, 2, 3))  # Parallax depth: closer stars move faster
+        size = 1 if speed == 1 else 2
+        brightness = 120 if speed == 1 else (190 if speed == 2 else 255)
+        stars.append([x, y, speed, size, brightness])
+    return stars
 
 
-stars = []
-for _ in range(80):
-    x = random.randint(0, WIDTH)
-    y = random.randint(0, HEIGHT)
-    speed = random.choice([1, 2, 3])  # Parallax depth: closer stars move faster
-    size = 1 if speed == 1 else 2
-    brightness = 120 if speed == 1 else (190 if speed == 2 else 255)
-    stars.append([x, y, speed, size, brightness])
+# Function 3: Your exact Pygame movement & boundary checks
+def move_player(player_x, player_y, player_speed):
+    keys = pygame.key.get_pressed()
 
-# Game Variables
-player_x = 375
-player_y = 500
-player_speed = 6
+    # Left
+    if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        player_x -= player_speed
 
-asteroids = []
-spawn_counter = 0
-score = 0
-game_over = False   
+    # Right
+    if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        player_x += player_speed
 
-# Main Loop
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                sys.exit()
+    # Up 
+    if keys[pygame.K_UP] or keys[pygame.K_w]:
+        player_y -= player_speed
 
-        if event.type == pygame.KEYDOWN and game_over:
-            if event.key == pygame.K_SPACE:
-                player_x, player_y = 375, 500
-                asteroids = []
-                score = 0
-                game_over = False
+    # Down 
+    if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+        player_y += player_speed
 
-    
-    for star in stars:
-        star[1] += star[2]  
-        if star[1] > HEIGHT:
-            star[1] = 0
-            star[0] = random.randint(0, WIDTH)
+    # Screen Boundary Collisions 
+    if player_x < 0: player_x = 0
+    if player_x > WIDTH - PLAYER_WIDTH: player_x = WIDTH - PLAYER_WIDTH
+    if player_y < 0: player_y = 0
+    if player_y > HEIGHT - PLAYER_HEIGHT: player_y = HEIGHT - PLAYER_HEIGHT
 
-    if not game_over:
-        score += 1
+    return player_x, player_y
 
-        keys = pygame.key.get_pressed()
 
-        # Left
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            player_x -= player_speed
+# Function 4: Your exact Pygame asteroid spawning & Rect collision code
+def handle_asteroids(asteroids, spawn_counter, asteroid_base_img, player_rect):
+    spawn_counter += 1
+    if spawn_counter >= 30:
+        ast_size = random.randint(35, 70)
+        ast_x = random.randint(0, WIDTH - ast_size)
+        ast_rect = pygame.Rect(ast_x, -ast_size, ast_size, ast_size)
+        ast_img = pygame.transform.smoothscale(asteroid_base_img, (ast_size, ast_size))
+        asteroids.append({"rect": ast_rect, "img": ast_img})
+        spawn_counter = 0
 
-        # Right
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            player_x += player_speed
+    game_over = False
+    for asteroid in asteroids[:]:
+        asteroid["rect"].y += 5
 
-        # Up 
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            player_y -= player_speed
+        if asteroid["rect"].top > HEIGHT:
+            asteroids.remove(asteroid)
+        elif player_rect.colliderect(asteroid["rect"].inflate(-8, -8)):
+            game_over = True
 
-        # Down 
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            player_y += player_speed
+    return spawn_counter, game_over
 
-        # Screen Boundary Collisions 
-        if player_x < 0: player_x = 0
-        if player_x > WIDTH - PLAYER_WIDTH: player_x = WIDTH - PLAYER_WIDTH
-        if player_y < 0: player_y = 0
-        if player_y > HEIGHT - PLAYER_HEIGHT: player_y = HEIGHT - PLAYER_HEIGHT
 
-        # Player Hitbox
-        player_rect = pygame.Rect(player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT).inflate(-10, -10)
-
-        spawn_counter += 1
-        if spawn_counter >= 30:
-            ast_size = random.randint(35, 70)
-            ast_x = random.randint(0, WIDTH - ast_size)
-            ast_rect = pygame.Rect(ast_x, -ast_size, ast_size, ast_size)
-            ast_img = pygame.transform.smoothscale(asteroid_base_img, (ast_size, ast_size))
-            asteroids.append({"rect": ast_rect, "img": ast_img})
-            spawn_counter = 0
-
-        for asteroid in asteroids[:]:
-            asteroid["rect"].y += 5
-
-            if asteroid["rect"].top > HEIGHT:
-                asteroids.remove(asteroid)
-            elif player_rect.colliderect(asteroid["rect"].inflate(-8, -8)):
-                game_over = True
-
-    
+# Function 5: Your exact Pygame drawing & blitting code
+def draw_game(stars, ship_img, player_x, player_y, asteroids, score, game_over):
     screen.fill(Black)
 
-    
     for x, y, speed, size, brightness in stars:
         pygame.draw.circle(screen, (brightness, brightness, brightness), (x, y), size)
 
     if not game_over:
-       
         screen.blit(ship_img, (player_x, player_y))
 
-        
         for asteroid in asteroids:
             screen.blit(asteroid["img"], asteroid["rect"])
 
@@ -156,4 +123,61 @@ while True:
         screen.blit(restart_text, (WIDTH // 2 - 180, HEIGHT // 2 + 20))
 
     pygame.display.flip()
-    clock.tick(60)
+
+
+# Required main() function
+def main():
+    ship_img = pygame.transform.smoothscale(load_sprite("Halo ship.jpeg"), (PLAYER_WIDTH, PLAYER_HEIGHT))
+    asteroid_base_img = load_sprite("Asteroid.png")
+    stars = create_stars()
+
+    # Game Variables
+    player_x = 375
+    player_y = 500
+    player_speed = 6
+
+    asteroids = []
+    spawn_counter = 0
+    score = 0
+    game_over = False   
+
+    # Main Loop
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
+            if event.type == pygame.KEYDOWN and game_over:
+                if event.key == pygame.K_SPACE:
+                    player_x, player_y = 375, 500
+                    asteroids = []
+                    score = 0
+                    game_over = False
+
+        for star in stars:
+            star[1] += star[2]  
+            if star[1] > HEIGHT:
+                star[1] = 0
+                star[0] = random.randint(0, WIDTH)
+
+        if not game_over:
+            score += 1
+            player_x, player_y = move_player(player_x, player_y, player_speed)
+
+            # Player Hitbox
+            player_rect = pygame.Rect(player_x, player_y, PLAYER_WIDTH, PLAYER_HEIGHT).inflate(-10, -10)
+            spawn_counter, game_over = handle_asteroids(
+                asteroids, spawn_counter, asteroid_base_img, player_rect
+            )
+
+        draw_game(stars, ship_img, player_x, player_y, asteroids, score, game_over)
+        clock.tick(60)
+
+
+if __name__ == "__main__":
+    main()
